@@ -7,6 +7,9 @@
     <groupId>ru.alexdgrad.myserver</groupId>
     <artifactId>ru.alexdgrad.myserver</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <packaging>war</packaging>
+
+    <!-- https://mvnrepository.com/artifact/org.springframework/spring-core -->
 
 
 </project>
