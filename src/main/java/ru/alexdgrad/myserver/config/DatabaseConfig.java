@@ -8,8 +8,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.annotation.Resource;
@@ -23,14 +25,14 @@ import java.util.Properties;
 @EnableTransactionManagement
 @ComponentScan("ru.alexdgrad.myserver")
 @PropertySource("classpath:db.properties")
-public class Databaseconfig {
+public class DatabaseConfig {
 
     @Resource
     private Environment env;
 
     @Bean
-    public LocalContainerEntityManagerFactoryBean entityManagerFactory(){
-        LocalContainerEntityManagerFactoryBean em =new LocalContainerEntityManagerFactoryBean();
+    public LocalContainerEntityManagerFactoryBean  entityManagerFactory(){
+        LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
         em.setDataSource(dataSource());
         em.setPackagesToScan(env.getRequiredProperty("db.entity.package"));
         em.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
@@ -38,16 +40,23 @@ public class Databaseconfig {
         
         return em;
     }
+    @Bean
+    public PlatformTransactionManager platformTransactionManager(){
+        JpaTransactionManager manager = new JpaTransactionManager();
+        manager.setEntityManagerFactory(entityManagerFactory().getObject());
+        return  manager;
+    }
 
     private Properties getHibernateProperties() {
-        Properties properties=new Properties();
-        InputStream is=getClass().getClassLoader().getResourceAsStream("hibernate.properties");
         try {
-            properties.load(is);
+            Properties properties=new Properties();
+            InputStream is=getClass().getClassLoader().getResourceAsStream("hibernate.properties");
+                    properties.load(is);
+
+        return properties;
         } catch (IOException e) {
             throw  new IllegalArgumentException("can't load property file of hibernate",e);
         }
-        return properties;
     }
 
     @Bean
@@ -57,7 +66,13 @@ public class Databaseconfig {
         ds.setDriverClassName(env.getRequiredProperty("db.driver"));
         ds.setUsername(env.getProperty("db.username"));
         ds.setPassword(env.getRequiredProperty("db.password"));
-
+        ds.setInitialSize(Integer.valueOf((env.getRequiredProperty("db.initialSize"))));
+        ds.setMinIdle(Integer.valueOf(env.getRequiredProperty("db.minIdle")));
+        ds.setMaxIdle(Integer.valueOf(env.getRequiredProperty("db.maxIdle")));
+        ds.setTimeBetweenEvictionRunsMillis(Integer.valueOf(env.getRequiredProperty("db.timeBeetweenEvictionRunsMillis")));
+        ds.setMinEvictableIdleTimeMillis(Integer.valueOf(env.getRequiredProperty("db.minEvictableIdleTimeMillis")));
+        ds.setTestOnBorrow(Boolean.valueOf(env.getRequiredProperty("db.testOnBorrow")));
+        ds.setValidationQuery(env.getRequiredProperty("db.validationQuery"));
         return  ds;
     }
 }
