@@ -11,7 +11,7 @@ public class Remind {
     @Id
     @GeneratedValue(generator = "increment")
     @GenericGenerator(name = "increment",strategy = "increment")
-    private Long id;
+    private long id;
     @Column(name="title", nullable = false,length = 50)
     private String title;
 
@@ -22,7 +22,7 @@ public class Remind {
     public Remind() {
     }
 
-    public Long getId() {
+    public long getId() {
         return id;
     }
 
@@ -34,7 +34,7 @@ public class Remind {
         return remaindDate;
     }
 
-    public void setId(Long id) {
+    public void setId(long id) {
         this.id = id;
     }
 
