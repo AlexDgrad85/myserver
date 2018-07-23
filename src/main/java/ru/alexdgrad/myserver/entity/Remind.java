@@ -14,7 +14,9 @@ public class Remind {
     private Long id;
     @Column(name="title", nullable = false,length = 50)
     private String title;
+
     @Column(name ="remaind_date",nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date remaindDate;
 
     public Remind() {
